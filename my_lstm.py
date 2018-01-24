@@ -52,7 +52,9 @@ def define_scope(func, scope=None, *args, **kwargs):
 class MyRNNModel:
     def __init__(self, x, label,
                  hidden_units, max_step, input_size, output_size,
-                 access_config, lr=1e-4, ):
+                 access_config,
+                 batch_size,
+                 lr=1e-4, clip_value=None):
         self.input = x
         self.label = label
         self.hidden_units = hidden_units
@@ -61,6 +63,8 @@ class MyRNNModel:
         self.output_size = output_size
         self.lr = lr
         self.access_config = access_config
+        self.batch_size = batch_size
+        self.clip_value = clip_value
         # 对 weights biases 初始值的定义
         # self.weights = {
         #     # shape (28, 128)
@@ -91,8 +95,8 @@ class MyRNNModel:
         # initial_state = lstm_cell.initial_state(batch_size, tf.float32)
         cell = DNC(self.access_config,
                    {"hidden_size": self.hidden_units},
-                   self.output_size)
-        initial_state = cell.initial_state(128, tf.float32)
+                   self.output_size, self.clip_value)
+        initial_state = cell.initial_state(self.batch_size, tf.float32)
         outputs, final_state = tf.nn.dynamic_rnn(cell, self.input,
                                                  initial_state=initial_state,
                                                  dtype=tf.float32,
@@ -109,20 +113,26 @@ class MyRNNModel:
 
     @define_scope
     def optimize(self):
-        # optimizer = tf.train.AdamOptimizer(self.lr)
-        optimizer = tf.train.AdamOptimizer()
+        # optimizer = tf.train.AdamOptimizer()
+        optimizer = tf.train.RMSPropOptimizer(self.lr)
         return optimizer.minimize(self.cost)
 
     @define_scope
     def cost(self):
         pred = tf.reshape(self.prediction, [-1, self.output_size])
         labels = tf.reshape(self.label, [-1, self.output_size])
-        return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=labels))
+        xent = tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=labels)
+
+        mask = 1 - tf.cast(tf.reduce_all(tf.equal(labels, 0), 1), tf.float32)
+
+        return tf.reduce_mean(xent * mask)
 
     @define_scope
     def accuracy(self):
         predicts = tf.argmax(self.prediction, 2)
         labels = tf.argmax(self.label, 2)
+        mask = 1 - tf.cast(tf.equal(labels, 0), tf.int64)
+        predicts = predicts * mask
         correct_num = tf.cast(tf.reduce_all(tf.equal(predicts, labels), 1), tf.float32)
 
         return tf.reduce_mean(correct_num)

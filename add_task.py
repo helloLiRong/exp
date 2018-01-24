@@ -109,12 +109,15 @@ class AddTask(object):
     def next_batch(self, batch_size):
         return self._create_datas(batch_size, self.min_step, self.max_step)
 
+    def next_batch_for_test(self, batch_size, min_step, max_step):
+        return self._create_datas(batch_size, min_step, max_step)
+
     def next_batch_curr(self, batch_size, min_step, curr_step):
         normal_batch_size = batch_size // 10 * 8
         extra_size = batch_size - normal_batch_size
         res_x, res_y = self._create_datas(normal_batch_size, curr_step, curr_step)
 
-        step = rand.randint(1, self.max_step)
+        step = rand.randint(1, curr_step)
         extra_data_x, extra_data_y = self._create_datas(extra_size, 1, step)
         x = np.concatenate([res_x, extra_data_x], 0)
         y = np.concatenate([res_y, extra_data_y], 0)
