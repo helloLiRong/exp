@@ -13,7 +13,7 @@ tf.flags.DEFINE_string("task", "copy", "task name")
 tf.flags.DEFINE_string("model", "dnc", "model name")
 tf.flags.DEFINE_integer("lr", 1e-4, "learning rate.")
 tf.flags.DEFINE_integer("training_iters", 5000, "The number of training steps.")
-tf.flags.DEFINE_integer("batch_size", 16, "The number of a batch data.")
+tf.flags.DEFINE_integer("batch_size", 64, "The number of a batch data.")
 tf.flags.DEFINE_integer("input_size", 8, "The number of input vector size in a step.")
 tf.flags.DEFINE_integer("max_steps", 50, "The max steps.")
 tf.flags.DEFINE_integer("hidden_units", 100, "The number of hidden units")
@@ -35,9 +35,9 @@ tf.flags.DEFINE_boolean("need_load_parameter", False, "need to load parameter or
 tf.flags.DEFINE_string("save_path", "checkpoint_%s_%s/net.ckpt" % (FLAGS.task, FLAGS.model), "we will train this model")
 
 tf.flags.DEFINE_integer("memory_size", 64, "The number of memory slots.")
-tf.flags.DEFINE_integer("word_size", 8, "The width of each memory slot.")
+tf.flags.DEFINE_integer("word_size", 20, "The width of each memory slot.")
 tf.flags.DEFINE_integer("num_write_heads", 1, "Number of memory write heads.")
-tf.flags.DEFINE_integer("num_read_heads", 4, "Number of memory read heads.")
+tf.flags.DEFINE_integer("num_read_heads", 1, "Number of memory read heads.")
 
 
 def train():
@@ -63,6 +63,12 @@ def train():
                                  FLAGS.lr, clip_value)
 
     sess = tf.Session()
+
+    merged = tf.summary.merge_all()
+    train_writer = tf.summary.FileWriter(FLAGS.save_path + '/train' + str(time.time()),
+                                         sess.graph)
+    test_writer = tf.summary.FileWriter(FLAGS.save_path + '/test' + str(time.time()))
+
     init = tf.global_variables_initializer()
     sess.run(init)
 
@@ -80,25 +86,21 @@ def train():
         batch_xs, batch_ys = task.next_batch_curr(FLAGS.batch_size, input_length, input_length)
 
         sess.run(model.optimize, {x: batch_xs, y: batch_ys})
-
         if step % 100 == 0:
-            saver.save(sess, FLAGS.save_path)
+            saver.save(sess, FLAGS.save_path, step)
 
-            cost_value, t_accuracy = 0, 0
-            test_runs = 10
-            for _ in range(test_runs):
-                test_x, test_y = task.next_batch_for_test(FLAGS.batch_size,
-                                                          input_length,
-                                                          input_length)
-                temp_predicts, temp_cost, temp_test = sess.run(
-                    [model.prediction, model.cost, model.accuracy],
-                    feed_dict={x: test_x, y: test_y})
-                cost_value += temp_cost
-                t_accuracy += temp_test
+            # cost_value, t_accuracy = 0, 0
+            # test_runs = 10
+            test_x, test_y = task.next_batch_for_test(FLAGS.batch_size,
+                                                      input_length,
+                                                      input_length)
+            [summary, temp_predicts, cost_value, t_accuracy] = sess.run(
+                [merged, model.prediction, model.cost, model.accuracy],
+                feed_dict={x: test_x, y: test_y})
+            test_writer.add_summary(summary, step)
 
-            train_accuracy = sess.run(model.accuracy, feed_dict={x: batch_xs, y: batch_ys})
-            cost_value /= test_runs
-            t_accuracy /= test_runs
+            [summary, train_accuracy] = sess.run([merged, model.accuracy], feed_dict={x: batch_xs, y: batch_ys})
+            train_writer.add_summary(summary, step)
             print("time: %s, step: %d, cost: %.5f, train: %.5f, test: %.5f" %
                   (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                    , step, cost_value, train_accuracy, t_accuracy))
@@ -136,7 +138,7 @@ def test():
                                  access_config,
                                  FLAGS.lr, FLAGS.clip_value)
 
-    test_x, test_y = task.next_batch(128)
+    test_x, test_y = task.next_batch(FLAGS.batch_size)
 
     sess = tf.Session()
     saver = tf.train.Saver()

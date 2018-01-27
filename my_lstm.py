@@ -124,8 +124,9 @@ class MyRNNModel:
         xent = tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=labels)
 
         mask = 1 - tf.cast(tf.reduce_all(tf.equal(labels, 0), 1), tf.float32)
-
-        return tf.reduce_mean(xent * mask)
+        cost_value = tf.reduce_mean(xent * mask)
+        tf.summary.scalar("cost", cost_value)
+        return cost_value
 
     @define_scope
     def accuracy(self):
@@ -135,4 +136,6 @@ class MyRNNModel:
         predicts = predicts * mask
         correct_num = tf.cast(tf.reduce_all(tf.equal(predicts, labels), 1), tf.float32)
 
-        return tf.reduce_mean(correct_num)
+        accuracy_value = tf.reduce_mean(correct_num)
+        tf.summary.scalar("accuracy", accuracy_value)
+        return accuracy_value
