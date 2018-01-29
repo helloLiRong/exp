@@ -1,6 +1,0 @@
-model_checkpoint_path: "net.ckpt-61000"
-all_model_checkpoint_paths: "net.ckpt-60600"
-all_model_checkpoint_paths: "net.ckpt-60700"
-all_model_checkpoint_paths: "net.ckpt-60800"
-all_model_checkpoint_paths: "net.ckpt-60900"
-all_model_checkpoint_paths: "net.ckpt-61000"

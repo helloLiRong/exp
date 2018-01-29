@@ -1,9 +1,9 @@
-import tensorflow as tf
-from my_lstm import MyRNNModel
-from add_task import AddTask
-from copy_task import CopyTask
 import time
-import numpy as np
+
+import tensorflow as tf
+from add_task import AddTask
+
+from task.copy_task import CopyTask
 
 FLAGS = tf.flags.FLAGS
 

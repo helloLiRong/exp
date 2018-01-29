@@ -1,26 +1,7 @@
-# Copyright 2017 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
-"""A repeat copy task."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-import collections
-import numpy as np
 import sonnet as snt
 import tensorflow as tf
+import collections
+import numpy as np
 
 DatasetTensors = collections.namedtuple('DatasetTensors', ('observations',
                                                            'target', 'mask'))
@@ -39,8 +20,8 @@ def masked_sigmoid_cross_entropy(logits,
 
     Args:
       logits: `Tensor` of activations for which sigmoid(`logits`) gives the
-          bernoulli parameter.
-      target: time-major `Tensor` of target.
+          bernoulli parameter.shape is [step,batch_size,num_bits]
+      target: time-major `Tensor` of target. shape is [step,batch_size,num_bits]
       mask: time-major `Tensor` to be multiplied elementwise with cost T x B cost
           masking out irrelevant time-steps.
       time_average: optionally average over the time dimension (sum by default).
@@ -49,6 +30,7 @@ def masked_sigmoid_cross_entropy(logits,
     Returns:
       A `Tensor` representing the log-probability of the target.
     """
+
     xent = tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=logits)
     loss_time_batch = tf.reduce_sum(xent, axis=2)
     loss_batch = tf.reduce_sum(loss_time_batch * mask, axis=0)
@@ -60,6 +42,7 @@ def masked_sigmoid_cross_entropy(logits,
         loss_batch /= (mask_count + np.finfo(np.float32).eps)
 
     loss = tf.reduce_sum(loss_batch) / batch_size
+
     if log_prob_in_bits:
         loss /= tf.log(2.)
 
@@ -112,79 +95,17 @@ def bitstring_readable(data, batch_size, model_output=None, whole_batch=False):
     return '\n' + '\n\n\n\n'.join(batch_strings)
 
 
-class RepeatCopy(snt.AbstractModule):
-    """Sequence data generator for the task of repeating a random binary pattern.
-
-    When called, an instance of this class will return a tuple of tensorflow ops
-    (obs, targ, mask), representing an input sequence, target sequence, and
-    binary mask. Each of these ops produces tensors whose first two dimensions
-    represent sequence position and batch index respectively. The value in
-    mask[t, b] is equal to 1 iff a prediction about targ[t, b, :] should be
-    penalized and 0 otherwise.
-
-    For each realisation from this generator, the observation sequence is
-    comprised of I.I.D. uniform-random binary vectors (and some flags).
-
-    The target sequence is comprised of this binary pattern repeated
-    some number of times (and some flags). Before explaining in more detail,
-    let's examine the setup pictorially for a single batch element:
-
-    ```none
-    Note: blank space represents 0.
-
-    time ------------------------------------------>
-
-                  +-------------------------------+
-    mask:         |0000000001111111111111111111111|
-                  +-------------------------------+
-
-                  +-------------------------------+
-    target:       |                              1| 'end-marker' channel.
-                  |         101100110110011011001 |
-                  |         010101001010100101010 |
-                  +-------------------------------+
-
-                  +-------------------------------+
-    observation:  | 1011001                       |
-                  | 0101010                       |
-                  |1                              | 'start-marker' channel
-                  |        3                      | 'num-repeats' channel.
-                  +-------------------------------+
-    ```
-
-    The length of the random pattern and the number of times it is repeated
-    in the target are both discrete random variables distributed according to
-    uniform distributions whose parameters are configured at construction time.
-
-    The obs sequence has two extra channels (components in the trailing dimension)
-    which are used for flags. One channel is marked with a 1 at the first time
-    step and is otherwise equal to 0. The other extra channel is zero until the
-    binary pattern to be repeated ends. At this point, it contains an encoding of
-    the number of times the observation pattern should be repeated. Rather than
-    simply providing this integer number directly, it is normalised so that
-    a neural network may have an easier time representing the number of
-    repetitions internally. To allow a network to be readily evaluated on
-    instances of this task with greater numbers of repetitions, the range with
-    respect to which this encoding is normalised is also configurable by the user.
-
-    As in the diagram, the target sequence is offset to begin directly after the
-    observation sequence; both sequences are padded with zeros to accomplish this,
-    resulting in their lengths being equal. Additional padding is done at the end
-    so that all sequences in a minibatch represent tensors with the same shape.
-    """
-
+class CopyTask(snt.AbstractModule):
     def __init__(
             self,
             num_bits=6,
             batch_size=1,
             min_length=1,
             max_length=1,
-            min_repeats=1,
-            max_repeats=2,
             norm_max=10,
             log_prob_in_bits=False,
             time_average_cost=False,
-            name='repeat_copy', ):
+            name='copy', ):
         """Creates an instance of RepeatCopy task.
 
         Args:
@@ -195,10 +116,6 @@ class RepeatCopy(snt.AbstractModule):
               observation pattern.
           max_length: Upper limit on number of random binary vectors in the
               observation pattern.
-          min_repeats: Lower limit on number of times the obervation pattern
-              is repeated in targ.
-          max_repeats: Upper limit on number of times the observation pattern
-              is repeated in targ.
           norm_max: Upper limit on uniform distribution w.r.t which the encoding
               of the number of repetitions presented in the observation sequence
               is normalised.
@@ -209,14 +126,12 @@ class RepeatCopy(snt.AbstractModule):
               steps, in each sequence before any subsequent reduction over the time
               and batch dimensions.
         """
-        super(RepeatCopy, self).__init__(name=name)
+        super(CopyTask, self).__init__(name=name)
 
         self._batch_size = batch_size
         self._num_bits = num_bits
         self._min_length = min_length
         self._max_length = max_length
-        self._min_repeats = min_repeats
-        self._max_repeats = max_repeats
         self._norm_max = norm_max
         self._log_prob_in_bits = log_prob_in_bits
         self._time_average_cost = time_average_cost
@@ -254,25 +169,20 @@ class RepeatCopy(snt.AbstractModule):
 
         # short-hand for private fields.
         min_length, max_length = self._min_length, self._max_length
-        min_reps, max_reps = self._min_repeats, self._max_repeats
         num_bits = self.num_bits
         batch_size = self.batch_size
 
         # We reserve one dimension for the num-repeats and one for the start-marker.
-        full_obs_size = num_bits + 2
+        full_obs_size = num_bits + 1
         # We reserve one target dimension for the end-marker.
         full_targ_size = num_bits + 1
-        start_end_flag_idx = full_obs_size - 2
-        num_repeats_channel_idx = full_obs_size - 1
+        start_end_flag_idx = full_obs_size - 1
 
         # Samples each batch index's sequence length and the number of repeats.
         sub_seq_length_batch = tf.random_uniform(
             [batch_size], minval=min_length, maxval=max_length + 1, dtype=tf.int32)
-        num_repeats_batch = tf.random_uniform(
-            [batch_size], minval=min_reps, maxval=max_reps + 1, dtype=tf.int32)
 
-        # Pads all the batches to have the same total sequence length.
-        total_length_batch = sub_seq_length_batch * (num_repeats_batch + 1) + 3
+        total_length_batch = 2 * (sub_seq_length_batch + 1)
         max_length_batch = tf.reduce_max(total_length_batch)
         residual_length_batch = max_length_batch - total_length_batch
 
@@ -287,9 +197,7 @@ class RepeatCopy(snt.AbstractModule):
         # Generates patterns for each batch element independently.
         for batch_index in range(batch_size):
             sub_seq_len = sub_seq_length_batch[batch_index]
-            num_reps = num_repeats_batch[batch_index]
 
-            # The observation pattern is a sequence of random binary vectors.
             obs_pattern_shape = [sub_seq_len, num_bits]
             obs_pattern = tf.cast(
                 tf.random_uniform(
@@ -298,29 +206,22 @@ class RepeatCopy(snt.AbstractModule):
 
             # The target pattern is the observation pattern repeated n times.
             # Some reshaping is required to accomplish the tiling.
-            targ_pattern_shape = [sub_seq_len * num_reps, num_bits]
+            targ_pattern_shape = [sub_seq_len, num_bits]
             flat_obs_pattern = tf.reshape(obs_pattern, [-1])
-            flat_targ_pattern = tf.tile(flat_obs_pattern, tf.stack([num_reps]))
+            flat_targ_pattern = tf.tile(flat_obs_pattern, tf.stack([1]))
             targ_pattern = tf.reshape(flat_targ_pattern, targ_pattern_shape)
-
             # Expand the obs_pattern to have two extra channels for flags.
             # Concatenate start flag and num_reps flag to the sequence.
-            obs_flag_channel_pad = tf.zeros([sub_seq_len, 2])
+            obs_flag_channel_pad = tf.zeros([sub_seq_len, 1])
             obs_start_flag = tf.one_hot(
                 [start_end_flag_idx], full_obs_size, on_value=1., off_value=0.)
-            num_reps_flag = tf.one_hot(
-                [num_repeats_channel_idx],
-                full_obs_size,
-                on_value=self._normalise(tf.cast(num_reps, tf.float32)),
-                off_value=0.)
 
             # note the concatenation dimensions.
             obs = tf.concat([obs_pattern, obs_flag_channel_pad], 1)
             obs = tf.concat([obs_start_flag, obs], 0)
-            obs = tf.concat([obs, num_reps_flag], 0)
 
             # Now do the same for the targ_pattern (it only has one extra channel).
-            targ_flag_channel_pad = tf.zeros([sub_seq_len * num_reps, 1])
+            targ_flag_channel_pad = tf.zeros([sub_seq_len, 1])
             targ_end_flag = tf.one_hot(
                 [start_end_flag_idx], full_targ_size, on_value=1., off_value=0.)
             targ = tf.concat([targ_pattern, targ_flag_channel_pad], 1)
@@ -328,12 +229,12 @@ class RepeatCopy(snt.AbstractModule):
 
             # Concatenate zeros at end of obs and begining of targ.
             # This aligns them s.t. the target begins as soon as the obs ends.
-            obs_end_pad = tf.zeros([sub_seq_len * num_reps + 1, full_obs_size])
-            targ_start_pad = tf.zeros([sub_seq_len + 2, full_targ_size])
+            obs_end_pad = tf.zeros([sub_seq_len + 1, full_obs_size])
+            targ_start_pad = tf.zeros([sub_seq_len + 1, full_targ_size])
 
             # The mask is zero during the obs and one during the targ.
-            mask_off = tf.zeros([sub_seq_len + 2])
-            mask_on = tf.ones([sub_seq_len * num_reps + 1])
+            mask_off = tf.zeros([sub_seq_len + 1])
+            mask_on = tf.ones([sub_seq_len + 1])
 
             obs = tf.concat([obs, obs_end_pad], 0)
             targ = tf.concat([targ_start_pad, targ], 0)
@@ -374,19 +275,32 @@ class RepeatCopy(snt.AbstractModule):
         targ = tf.reshape(tf.concat(targ_tensors, 1), targ_batch_shape)
         mask = tf.transpose(
             tf.reshape(tf.concat(mask_tensors, 0), mask_batch_trans_shape))
+
         return DatasetTensors(obs, targ, mask)
 
     def cost(self, logits, targ, mask):
-        return masked_sigmoid_cross_entropy(
+        cost_value = masked_sigmoid_cross_entropy(
             logits,
             targ,
             mask,
             time_average=self.time_average_cost,
             log_prob_in_bits=self.log_prob_in_bits)
 
+        tf.summary.scalar("cost", cost_value)
+        return cost_value
+
+    def accuracy(self, logits, targ):
+        correct_ouputs = tf.cast(
+            tf.reduce_all(
+                tf.reduce_all(tf.equal(logits, targ), axis=2), axis=0),
+            dtype=tf.float32)
+        accuracy_value = tf.reduce_mean(correct_ouputs)
+        tf.summary.scalar("accuracy", accuracy_value)
+        return accuracy_value
+
     def to_human_readable(self, data, model_output=None, whole_batch=False):
-        obs = data.observations
-        unnormalised_num_reps_flag = self._unnormalise(obs[:, :, -1:]).round()
-        obs = np.concatenate([obs[:, :, :-1], unnormalised_num_reps_flag], axis=2)
-        data = data._replace(observations=obs)
+        # obs = data.observations
+        # unnormalised_num_reps_flag = self._unnormalise(obs[:, :, -1:]).round()
+        # obs = np.concatenate([obs[:, :, :-1], unnormalised_num_reps_flag], axis=2)
+        # data = data._replace(observations=obs)
         return bitstring_readable(data, self.batch_size, model_output, whole_batch)
