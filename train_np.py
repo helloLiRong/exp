@@ -11,11 +11,11 @@ from task.copy_task_np import CopyTask
 FLAGS = tf.flags.FLAGS
 
 # Model parameters
-tf.flags.DEFINE_integer("hidden_size", 64, "Size of LSTM hidden layer.")
-tf.flags.DEFINE_integer("memory_size", 64, "The number of memory slots.")
-tf.flags.DEFINE_integer("word_size", 8, "The width of each memory slot.")
+tf.flags.DEFINE_integer("hidden_size", 128, "Size of LSTM hidden layer.")
+tf.flags.DEFINE_integer("memory_size", 128, "The number of memory slots.")
+tf.flags.DEFINE_integer("word_size", 20, "The width of each memory slot.")
 tf.flags.DEFINE_integer("num_write_heads", 1, "Number of memory write heads.")
-tf.flags.DEFINE_integer("num_read_heads", 4, "Number of memory read heads.")
+tf.flags.DEFINE_integer("num_read_heads", 1, "Number of memory read heads.")
 tf.flags.DEFINE_integer("clip_value", 20,
                         "Maximum absolute value of controller and dnc outputs.")
 
@@ -32,7 +32,7 @@ tf.flags.DEFINE_integer(
     "min_length", 1,
     "Lower limit on number of vectors in the observation pattern to copy")
 tf.flags.DEFINE_integer(
-    "max_length", 10,
+    "max_length", 20,
     "Upper limit on number of vectors in the observation pattern to copy")
 
 # Training options.
@@ -45,6 +45,8 @@ tf.flags.DEFINE_string("checkpoint_dir", "exp_result/dnc",
 tf.flags.DEFINE_integer("checkpoint_interval", 10000,
                         "Checkpointing step interval.")
 tf.flags.DEFINE_bool("is_training", True, "is training")
+tf.flags.DEFINE_float("curriculum_learning_epsilon", 0.90, "epsilon of curriculum learning")
+tf.flags.DEFINE_integer("dataset_size", 1000, "size of dataset")
 
 
 def run_model(input_sequence, output_size):
@@ -127,17 +129,18 @@ def train(num_training_iterations, report_interval):
             hooks=hooks, checkpoint_dir=FLAGS.checkpoint_dir) as sess:
 
         start_iteration = sess.run(global_step)
+        current_length = 1
         total_loss = 0
-
         for train_iteration in range(start_iteration, num_training_iterations):
-
-            if train_iteration % report_interval == 0:
-                all_train_data = dataset(batch_size=FLAGS.batch_size * report_interval
-                                         , max_length=FLAGS.max_length)
-                test_train_data = dataset(batch_size=FLAGS.batch_size
-                                          , max_length=FLAGS.max_length)
+            if train_iteration % FLAGS.dataset_size == 0:
+                all_train_data = dataset(batch_size=FLAGS.batch_size * FLAGS.dataset_size
+                                         , max_length=current_length)
                 start_idx = 0
                 end_idx = start_idx + FLAGS.batch_size
+
+            if train_iteration % report_interval == 0:
+                test_train_data = dataset(batch_size=FLAGS.batch_size
+                                          , max_length=current_length)
 
                 summary, output_np, accuracy_np = sess.run(
                     [merged, output, train_accuracy], feed_dict={
@@ -156,6 +159,8 @@ def train(num_training_iterations, report_interval):
                                 total_loss / report_interval,
                                 accuracy_np,
                                 dataset_string)
+                if accuracy_np > FLAGS.curriculum_learning_epsilon:
+                    current_length += 1
                 total_loss = 0
 
             observations = all_train_data.observations[:, start_idx:end_idx, :]

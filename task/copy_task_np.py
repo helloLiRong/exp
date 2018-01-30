@@ -1,9 +1,12 @@
 import tensorflow as tf
 import collections
 import numpy as np
+from enum import Enum, unique
 
 DatasetTensors = collections.namedtuple('DatasetTensors', ('observations',
                                                            'target', 'mask'))
+# curriculum_learning_strategy
+cls = Enum("curriculum_strategy", ("No", "Naive", "Combining"))
 
 
 def masked_sigmoid_cross_entropy(logits,
@@ -103,7 +106,9 @@ class CopyTask:
             max_length=1,
             norm_max=10,
             log_prob_in_bits=False,
-            time_average_cost=False):
+            time_average_cost=False,
+            curriculum_learning_strategy=None
+    ):
         """Creates an instance of RepeatCopy task.
 
         Args:
