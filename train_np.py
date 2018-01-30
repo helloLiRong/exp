@@ -160,6 +160,7 @@ def train(num_training_iterations, report_interval):
                                 accuracy_np,
                                 dataset_string)
                 if accuracy_np > FLAGS.curriculum_learning_epsilon:
+                    tf.logging.info("length: %d curriculum completed\n" % current_length)
                     current_length += 1
                 total_loss = 0
 
