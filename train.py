@@ -1,8 +1,6 @@
 import time
 
 import tensorflow as tf
-from add_task import AddTask
-
 from task.copy_task import CopyTask
 
 FLAGS = tf.flags.FLAGS
@@ -83,9 +81,6 @@ def train():
         if input_length == FLAGS.max_train_time_step and t_accuracy > 0.999:
             break
 
-        batch_xs, batch_ys = task.next_batch_curr(FLAGS.batch_size, input_length, input_length)
-
-        sess.run(model.optimize, {x: batch_xs, y: batch_ys})
         if step % 100 == 0:
             saver.save(sess, FLAGS.save_path, step)
 
@@ -114,6 +109,10 @@ def train():
                       (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                        , input_length, temp_test))
                 print('---------' * 3)
+
+        batch_xs, batch_ys = task.next_batch_curr(FLAGS.batch_size, input_length, input_length)
+
+        sess.run(model.optimize, {x: batch_xs, y: batch_ys})
         step += 1
 
 
@@ -155,8 +154,6 @@ def test():
 
 
 def get_task(**data_config):
-    if FLAGS.task == "add":
-        return AddTask(**data_config)
     if FLAGS.task == 'copy':
         return CopyTask(**data_config)
 

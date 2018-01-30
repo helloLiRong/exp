@@ -117,8 +117,7 @@ class MyRNNModel:
         optimizer = tf.train.RMSPropOptimizer(self.lr)
         return optimizer.minimize(self.cost)
 
-    @define_scope
-    def cost(self):
+    def cost_back(self, logits, target, mask):
         pred = tf.reshape(self.prediction, [-1, self.output_size])
         labels = tf.reshape(self.label, [-1, self.output_size])
         xent = tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=labels)
@@ -128,8 +127,27 @@ class MyRNNModel:
         tf.summary.scalar("cost", cost_value)
         return cost_value
 
+    def cost(self, logits, target, mask):
+        xent = tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=logits)
+        loss_time_batch = tf.reduce_sum(xent, axis=2)
+        loss_batch = tf.reduce_sum(loss_time_batch * mask, axis=0)
+
+        batch_size = tf.cast(tf.shape(logits)[1], dtype=loss_time_batch.dtype)
+        loss = tf.reduce_sum(loss_batch) / batch_size
+        tf.summary.scalar("cost", loss)
+        return loss
+
     @define_scope
-    def accuracy(self):
+    def accuracy(self, logits, targ):
+        correct_ouputs = tf.cast(
+            tf.reduce_all(
+                tf.reduce_all(tf.equal(logits, targ), axis=2), axis=0),
+            dtype=tf.float32)
+        accuracy_value = tf.reduce_mean(correct_ouputs)
+        tf.summary.scalar("accuracy", accuracy_value)
+        return accuracy_value
+
+    def accuracy_back(self):
         predicts = tf.argmax(self.prediction, 2)
         labels = tf.argmax(self.label, 2)
         mask = 1 - tf.cast(tf.equal(labels, 0), tf.int64)

@@ -111,8 +111,8 @@ class CopyTask(object):
         return x, y
 
     def get_model(self, hidden_units, access_config, lr, clip_value):
-        x = tf.placeholder(tf.float32, [None, self.real_max_step, self.input_size + 3])
-        y = tf.placeholder(tf.float32, [None, self.real_max_step, self.output_size])
+        x = tf.placeholder(tf.float32,[None,])
+        y = tf.placeholder(tf.float32)
 
         model = MyRNNModel(x, y,
                            hidden_units,
