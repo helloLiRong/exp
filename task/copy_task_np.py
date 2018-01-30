@@ -1,12 +1,12 @@
 import tensorflow as tf
 import collections
 import numpy as np
-from enum import Enum, unique
+from enum import Enum
 
 DatasetTensors = collections.namedtuple('DatasetTensors', ('observations',
                                                            'target', 'mask'))
 # curriculum_learning_strategy
-cls = Enum("curriculum_strategy", ("No", "Naive", "Combining"))
+CLS = Enum("curriculum_strategy", ("No", "Naive", "Combining"))
 
 
 def masked_sigmoid_cross_entropy(logits,
@@ -136,6 +136,7 @@ class CopyTask:
         self._norm_max = norm_max
         self._log_prob_in_bits = log_prob_in_bits
         self._time_average_cost = time_average_cost
+        self._cls = curriculum_learning_strategy
 
     def _normalise(self, val):
         return val / self._norm_max
@@ -167,7 +168,14 @@ class CopyTask:
 
     def __call__(self, min_length=1, max_length=20, batch_size=128):
         """Implements build method which adds ops to graph."""
+        if CLS.No.name == self._cls:
+            return self._create_data(batch_size, self._min_length, self._max_length)
+        elif CLS.Naive.name == self._cls:
+            return self._create_data(batch_size, min_length, max_length)
+        elif CLS.Combining.name == self._cls:
+            return self._create_data(batch_size, self._min_length, max_length, True)
 
+    def _create_data(self, batch_size, min_length, max_length, use_combining=False):
         # short-hand for private fields.
         num_bits = self.num_bits
         # We reserve one dimension for the num-repeats and one for the start-marker.
@@ -175,23 +183,28 @@ class CopyTask:
         # We reserve one target dimension for the end-marker.
         full_targ_size = num_bits + 1
         start_end_flag_idx = full_obs_size - 1
-
         # Samples each batch index's sequence length and the number of repeats.
-        sub_seq_length_batch = np.random.randint(
-            low=min_length, high=max_length + 1, size=[batch_size])
+        if not use_combining:
+            sub_seq_length_batch = np.random.randint(
+                low=min_length, high=max_length + 1, size=[batch_size])
+        else:
+            max_batch = batch_size // 8
+            min_batch = batch_size - max_batch
+            sub_seq_max = np.random.randint(
+                low=max_length, high=max_length + 1, size=[max_batch])
+            sub_seq_min = np.random.randint(
+                low=min_length, high=max_length, size=[min_batch])
+            sub_seq_length_batch = np.concatenate([sub_seq_max, sub_seq_min], 0)
 
         total_length_batch = 2 * (sub_seq_length_batch + 1)
         max_length_batch = np.max(total_length_batch)
         residual_length_batch = max_length_batch - total_length_batch
-
         obs_batch_shape = [max_length_batch, batch_size, full_obs_size]
         targ_batch_shape = [max_length_batch, batch_size, full_targ_size]
         mask_batch_trans_shape = [batch_size, max_length_batch]
-
         obs_tensors = []
         targ_tensors = []
         mask_tensors = []
-
         # Generates patterns for each batch element independently.
         for batch_index in range(batch_size):
             sub_seq_len = sub_seq_length_batch[batch_index]
@@ -254,7 +267,6 @@ class CopyTask:
         residual_mask_pad = [
             np.zeros([residual_length_batch[i]]) for i in range(batch_size)
         ]
-
         # Concatenate the pad to each batch element.
         obs_tensors = [
             np.concatenate([o, p], 0) for o, p in zip(obs_tensors, residual_obs_pad)
@@ -265,13 +277,11 @@ class CopyTask:
         mask_tensors = [
             np.concatenate([m, p], 0) for m, p in zip(mask_tensors, residual_mask_pad)
         ]
-
         # Concatenate each batch element into a single tensor.
         obs = np.reshape(np.concatenate(obs_tensors, 1), obs_batch_shape)
         targ = np.reshape(np.concatenate(targ_tensors, 1), targ_batch_shape)
         mask = np.transpose(
             np.reshape(np.concatenate(mask_tensors, 0), mask_batch_trans_shape))
-
         return DatasetTensors(obs, targ, mask)
 
     def cost(self, logits, targ, mask):

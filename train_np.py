@@ -7,6 +7,7 @@ import time
 
 import dnc.dnc as dnc
 from task.copy_task_np import CopyTask
+import task.copy_task_np as copy_task
 
 FLAGS = tf.flags.FLAGS
 
@@ -32,11 +33,11 @@ tf.flags.DEFINE_integer(
     "min_length", 1,
     "Lower limit on number of vectors in the observation pattern to copy")
 tf.flags.DEFINE_integer(
-    "max_length", 20,
+    "max_length", 10,
     "Upper limit on number of vectors in the observation pattern to copy")
 
 # Training options.
-tf.flags.DEFINE_integer("num_training_iterations", 1000000,
+tf.flags.DEFINE_integer("num_training_iterations", 100000,
                         "Number of iterations to train for.")
 tf.flags.DEFINE_integer("report_interval", 100,
                         "Iterations between reports (samples, valid loss).")
@@ -45,8 +46,10 @@ tf.flags.DEFINE_string("checkpoint_dir", "exp_result/dnc",
 tf.flags.DEFINE_integer("checkpoint_interval", 10000,
                         "Checkpointing step interval.")
 tf.flags.DEFINE_bool("is_training", True, "is training")
-tf.flags.DEFINE_float("curriculum_learning_epsilon", 0.90, "epsilon of curriculum learning")
+tf.flags.DEFINE_float("curriculum_learning_epsilon", 0.9, "epsilon of curriculum learning")
+tf.flags.DEFINE_string("CLS", "Combining", "epsilon of curriculum learning")
 tf.flags.DEFINE_integer("dataset_size", 1000, "size of dataset")
+tf.flags.DEFINE_integer("current_length", 2, "current_length")
 
 
 def run_model(input_sequence, output_size):
@@ -78,7 +81,8 @@ def train(num_training_iterations, report_interval):
     """Trains the DNC and periodically reports the loss."""
 
     dataset = CopyTask(FLAGS.num_bits, FLAGS.batch_size,
-                       FLAGS.min_length, FLAGS.max_length)
+                       FLAGS.min_length, FLAGS.max_length,
+                       curriculum_learning_strategy=FLAGS.CLS)
 
     x = tf.placeholder(tf.float32, [None, None, dataset.target_size])
     y = tf.placeholder(tf.float32, [None, None, dataset.target_size])
@@ -127,13 +131,13 @@ def train(num_training_iterations, report_interval):
     # Train.
     with tf.train.SingularMonitoredSession(
             hooks=hooks, checkpoint_dir=FLAGS.checkpoint_dir) as sess:
-
         start_iteration = sess.run(global_step)
-        current_length = 1
         total_loss = 0
+        current_length = FLAGS.current_length
         for train_iteration in range(start_iteration, num_training_iterations):
-            if train_iteration % FLAGS.dataset_size == 0:
-                all_train_data = dataset(batch_size=FLAGS.batch_size * FLAGS.dataset_size
+
+            if train_iteration % (current_length * FLAGS.dataset_size) == 0:
+                all_train_data = dataset(batch_size=FLAGS.batch_size * FLAGS.dataset_size * current_length
                                          , max_length=current_length)
                 start_idx = 0
                 end_idx = start_idx + FLAGS.batch_size
@@ -153,9 +157,10 @@ def train(num_training_iterations, report_interval):
                 dataset_string = dataset.to_human_readable(test_train_data,
                                                            output_np)
                 tf.logging.info("%s, "
-                                "step %d: Avg training loss %f. training_accuracy %f.\n%s\n",
+                                "step %d, length: %d: Avg training loss %f. training_accuracy %f.\n%s\n",
                                 (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())),
                                 train_iteration,
+                                current_length,
                                 total_loss / report_interval,
                                 accuracy_np,
                                 dataset_string)

@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 from task import new_copy_task as copy_task
 from task.copy_task_np import CopyTask
+from enum import Enum
 
 # 将sess封装成具有tfdbg功能的Session
 # dataset = repeat_copy.RepeatCopy()
@@ -26,11 +27,7 @@ from task.copy_task_np import CopyTask
 # print(sess.run(dataset.accuracy(obs, a.target)))
 # print(a.observations)
 # print(np.concatenate([a.observations[:, :, :-1], a.observations[:, :, -1:] * 10], axis=2))
-dataset = CopyTask()
-v = dataset(1, 2, 128)
 
-observations = v.observations[:, 1:2, :]
-target = v.target[:, 1:2, :]
-mask = v.mask[:, :1]
-print(dataset.to_human_readable(v, v.target))
-print(mask)
+CLS = Enum("curriculum_strategy", ("No", "Naive", "Combining"))
+
+print(CLS.No.name == "No")
