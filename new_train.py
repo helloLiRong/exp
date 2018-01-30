@@ -108,7 +108,7 @@ def train(num_training_iterations, report_interval):
 
     saver = tf.train.Saver()
     merged = tf.summary.merge_all()
-    train_writer = tf.summary.FileWriter(FLAGS.checkpoint_dir + '/train' + str(time.time()))
+    train_writer = tf.summary.FileWriter(FLAGS.checkpoint_dir + '/train')
 
     if FLAGS.checkpoint_interval > 0:
         hooks = [

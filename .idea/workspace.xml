@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e0b15552-a545-4dd0-a4d4-940fc34983a7" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/argument" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tf/dnc/train1517291309.3962145/events.out.tfevents.1517291379.lirong" afterPath="$PROJECT_DIR$/tf/dnc/train1517291309.3962145/events.out.tfevents.1517291379.lirong" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/new_train.py" afterPath="$PROJECT_DIR$/new_train.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -25,11 +28,21 @@
       <file leaf-file-name="new_train.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/new_train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="319">
-              <caret line="38" column="58" lean-forward="false" selection-start-line="38" selection-start-column="58" selection-end-line="38" selection-end-column="58" />
+            <state relative-caret-position="409">
+              <caret line="110" column="72" lean-forward="false" selection-start-line="110" selection-start-column="72" selection-end-line="110" selection-end-column="72" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="argument" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/argument">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="23" lean-forward="false" selection-start-line="0" selection-start-column="23" selection-end-line="0" selection-end-column="23" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -109,6 +122,7 @@
         <option value="$PROJECT_DIR$/test_copy_task.py" />
         <option value="$PROJECT_DIR$/task/new_copy_task.py" />
         <option value="$PROJECT_DIR$/task/test_copy_task.py" />
+        <option value="$PROJECT_DIR$/argument" />
         <option value="$PROJECT_DIR$/new_train.py" />
       </list>
     </option>
@@ -165,16 +179,6 @@
             <path>
               <item name="exp" type="b2602c69:ProjectViewProjectNode" />
               <item name="exp" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="exp" type="b2602c69:ProjectViewProjectNode" />
-              <item name="exp" type="462c0819:PsiDirectoryNode" />
-              <item name="task" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="exp" type="b2602c69:ProjectViewProjectNode" />
-              <item name="exp" type="462c0819:PsiDirectoryNode" />
-              <item name="tf" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -695,10 +699,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/argument">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="23" lean-forward="false" selection-start-line="0" selection-start-column="23" selection-end-line="0" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/new_train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="319">
-          <caret line="38" column="58" lean-forward="false" selection-start-line="38" selection-start-column="58" selection-end-line="38" selection-end-column="58" />
+        <state relative-caret-position="409">
+          <caret line="110" column="72" lean-forward="false" selection-start-line="110" selection-start-column="72" selection-end-line="110" selection-end-column="72" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
           </folding>
