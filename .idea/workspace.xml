@@ -2,41 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e0b15552-a545-4dd0-a4d4-940fc34983a7" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/new_train.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/task/test_copy_task.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/checkpoint" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-60600.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-60600.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-60600.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-60700.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-60700.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-60700.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-60800.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-60800.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-60800.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-60900.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-60900.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-60900.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-61000.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-61000.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt-61000.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt/test1516862429.4308195/events.out.tfevents.1516862433.lirong" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/checkpoint_copy_dnc/net.ckpt/train1516862428.8124278/events.out.tfevents.1516862429.lirong" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dnc/__init__.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dnc/access.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dnc/addressing.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dnc/dnc.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ntm/access.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ntm/addressing.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ntm/ntm.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/repeat_copy_backup.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test_repeat_copy_backup.py" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/add_task.py" afterPath="$PROJECT_DIR$/task/add_task.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/copy_task.py" afterPath="$PROJECT_DIR$/task/copy_task.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/ntm/__init__.py" afterPath="$PROJECT_DIR$/task/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/repeat_copy.py" afterPath="$PROJECT_DIR$/task/new_copy_task.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/train.py" afterPath="$PROJECT_DIR$/train.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/new_train.py" afterPath="$PROJECT_DIR$/new_train.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -59,8 +25,8 @@
       <file leaf-file-name="new_train.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/new_train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="349">
-              <caret line="129" column="54" lean-forward="false" selection-start-line="129" selection-start-column="54" selection-end-line="129" selection-end-column="54" />
+            <state relative-caret-position="319">
+              <caret line="38" column="58" lean-forward="false" selection-start-line="38" selection-start-column="58" selection-end-line="38" selection-end-column="58" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -204,6 +170,11 @@
               <item name="exp" type="b2602c69:ProjectViewProjectNode" />
               <item name="exp" type="462c0819:PsiDirectoryNode" />
               <item name="task" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="exp" type="b2602c69:ProjectViewProjectNode" />
+              <item name="exp" type="462c0819:PsiDirectoryNode" />
+              <item name="tf" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -726,8 +697,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/new_train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="349">
-          <caret line="129" column="54" lean-forward="false" selection-start-line="129" selection-start-column="54" selection-end-line="129" selection-end-column="54" />
+        <state relative-caret-position="319">
+          <caret line="38" column="58" lean-forward="false" selection-start-line="38" selection-start-column="58" selection-end-line="38" selection-end-column="58" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
           </folding>
