@@ -1,1 +1,3 @@
  2018-01-30 21:31:52, python3 train_np.py --hidden_size=64 --memory_size=64 --word_size=8
+
+ 2018-01-31 22:52:54, python3 train_np.py --current_length=6
