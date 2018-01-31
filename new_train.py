@@ -26,21 +26,21 @@ tf.flags.DEFINE_float("optimizer_epsilon", 1e-10,
                       "Epsilon used for RMSProp optimizer.")
 
 # Task parameters
-tf.flags.DEFINE_integer("batch_size", 32, "Batch size for training.")
-tf.flags.DEFINE_integer("num_bits", 8, "Dimensionality of each vector to copy")
+tf.flags.DEFINE_integer("batch_size", 16, "Batch size for training.")
+tf.flags.DEFINE_integer("num_bits", 4, "Dimensionality of each vector to copy")
 tf.flags.DEFINE_integer(
     "min_length", 1,
     "Lower limit on number of vectors in the observation pattern to copy")
 tf.flags.DEFINE_integer(
-    "max_length", 20,
+    "max_length", 3,
     "Upper limit on number of vectors in the observation pattern to copy")
 
 # Training options.
-tf.flags.DEFINE_integer("num_training_iterations", 1000000,
+tf.flags.DEFINE_integer("num_training_iterations", 100000,
                         "Number of iterations to train for.")
 tf.flags.DEFINE_integer("report_interval", 100,
                         "Iterations between reports (samples, valid loss).")
-tf.flags.DEFINE_string("checkpoint_dir", "exp_result/dnc",
+tf.flags.DEFINE_string("checkpoint_dir", "/tmp/tf/dnc",
                        "Checkpointing directory.")
 tf.flags.DEFINE_integer("checkpoint_interval", 10000,
                         "Checkpointing step interval.")

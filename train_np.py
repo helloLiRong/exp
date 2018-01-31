@@ -14,7 +14,7 @@ FLAGS = tf.flags.FLAGS
 # Model parameters
 tf.flags.DEFINE_integer("hidden_size", 128, "Size of LSTM hidden layer.")
 tf.flags.DEFINE_integer("memory_size", 128, "The number of memory slots.")
-tf.flags.DEFINE_integer("word_size", 20, "The width of each memory slot.")
+tf.flags.DEFINE_integer("word_size", 9, "The width of each memory slot.")
 tf.flags.DEFINE_integer("num_write_heads", 1, "Number of memory write heads.")
 tf.flags.DEFINE_integer("num_read_heads", 1, "Number of memory read heads.")
 tf.flags.DEFINE_integer("clip_value", 20,
@@ -43,13 +43,13 @@ tf.flags.DEFINE_integer("report_interval", 100,
                         "Iterations between reports (samples, valid loss).")
 tf.flags.DEFINE_string("checkpoint_dir", "exp_result/dnc",
                        "Checkpointing directory.")
-tf.flags.DEFINE_integer("checkpoint_interval", 10000,
+tf.flags.DEFINE_integer("checkpoint_interval", 1000,
                         "Checkpointing step interval.")
 tf.flags.DEFINE_bool("is_training", True, "is training")
 tf.flags.DEFINE_float("curriculum_learning_epsilon", 0.9, "epsilon of curriculum learning")
 tf.flags.DEFINE_string("CLS", "Combining", "epsilon of curriculum learning")
 tf.flags.DEFINE_integer("dataset_size", 1000, "size of dataset")
-tf.flags.DEFINE_integer("current_length", 2, "current_length")
+tf.flags.DEFINE_integer("current_length", 3, "current_length")
 
 
 def run_model(input_sequence, output_size):
@@ -116,6 +116,7 @@ def train(num_training_iterations, report_interval):
 
     saver = tf.train.Saver()
     merged = tf.summary.merge_all()
+    view_train_writer = tf.summary.FileWriter(FLAGS.checkpoint_dir + '/view')
     train_writer = tf.summary.FileWriter(FLAGS.checkpoint_dir + '/train')
 
     if FLAGS.checkpoint_interval > 0:
@@ -134,13 +135,17 @@ def train(num_training_iterations, report_interval):
         start_iteration = sess.run(global_step)
         total_loss = 0
         current_length = FLAGS.current_length
+        need_create_data = True
+
         for train_iteration in range(start_iteration, num_training_iterations):
 
-            if train_iteration % (current_length * FLAGS.dataset_size) == 0:
-                all_train_data = dataset(batch_size=FLAGS.batch_size * FLAGS.dataset_size * current_length
-                                         , max_length=current_length)
+            if train_iteration % (1 * FLAGS.dataset_size) == 0 \
+                    or need_create_data:
+                all_train_data = dataset(
+                    batch_size=FLAGS.batch_size * FLAGS.dataset_size * 1, max_length=current_length)
                 start_idx = 0
                 end_idx = start_idx + FLAGS.batch_size
+                need_create_data = False
 
             if train_iteration % report_interval == 0:
                 test_train_data = dataset(batch_size=FLAGS.batch_size
@@ -153,7 +158,11 @@ def train(num_training_iterations, report_interval):
                         m: test_train_data.mask
                     }
                 )
-                train_writer.add_summary(summary, train_iteration)
+
+                view_train_writer.add_summary(summary, train_iteration)
+                if train_iteration % FLAGS.checkpoint_interval == 0:
+                    train_writer.add_summary(summary, train_iteration)
+
                 dataset_string = dataset.to_human_readable(test_train_data,
                                                            output_np)
                 tf.logging.info("%s, "
@@ -164,9 +173,10 @@ def train(num_training_iterations, report_interval):
                                 total_loss / report_interval,
                                 accuracy_np,
                                 dataset_string)
-                if accuracy_np > FLAGS.curriculum_learning_epsilon:
+                if current_length != FLAGS.max_length and accuracy_np > FLAGS.curriculum_learning_epsilon:
                     tf.logging.info("length: %d curriculum completed\n" % current_length)
                     current_length += 1
+                    need_create_data = True
                 total_loss = 0
 
             observations = all_train_data.observations[:, start_idx:end_idx, :]

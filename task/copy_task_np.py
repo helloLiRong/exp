@@ -188,13 +188,14 @@ class CopyTask:
             sub_seq_length_batch = np.random.randint(
                 low=min_length, high=max_length + 1, size=[batch_size])
         else:
-            max_batch = batch_size // 8
+            max_batch = batch_size // 10 * 8
             min_batch = batch_size - max_batch
             sub_seq_max = np.random.randint(
                 low=max_length, high=max_length + 1, size=[max_batch])
             sub_seq_min = np.random.randint(
                 low=min_length, high=max_length, size=[min_batch])
             sub_seq_length_batch = np.concatenate([sub_seq_max, sub_seq_min], 0)
+            np.random.shuffle(sub_seq_length_batch)
 
         total_length_batch = 2 * (sub_seq_length_batch + 1)
         max_length_batch = np.max(total_length_batch)
