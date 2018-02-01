@@ -2,61 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e0b15552-a545-4dd0-a4d4-940fc34983a7" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/events.out.tfevents.1517364209.lirong" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/events.out.tfevents.1517375065.lirong" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-51000.data-00000-of-00001" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-51000.index" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-51000.meta" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-52000.data-00000-of-00001" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-52000.index" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-52000.meta" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-53000.data-00000-of-00001" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-53000.index" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-53000.meta" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-54000.data-00000-of-00001" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-54000.index" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-54000.meta" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-55000.data-00000-of-00001" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-55000.index" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-55000.meta" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-6000.data-00000-of-00001" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-6000.index" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-6000.meta" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-7000.data-00000-of-00001" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-7000.index" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-7000.meta" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-8000.data-00000-of-00001" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-8000.index" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-8000.meta" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-9000.data-00000-of-00001" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-9000.index" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/model.ckpt-9000.meta" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/train/events.out.tfevents.1517364221.lirong" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/train/events.out.tfevents.1517375080.lirong" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/view/events.out.tfevents.1517364221.lirong" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/view/events.out.tfevents.1517375080.lirong" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/checkpoint" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backup/exp_result_55000/dnc/graph.pbtxt" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-30000.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-30000.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-30000.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-31000.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-31000.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-31000.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-32000.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-32000.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-32000.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-33000.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-33000.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-33000.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-34000.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-34000.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/exp_result/dnc/model.ckpt-34000.meta" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/exp_result/dnc/events.out.tfevents.1517375065.lirong" afterPath="$PROJECT_DIR$/exp_result/dnc/events.out.tfevents.1517375065.lirong" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/exp_result/dnc/train/events.out.tfevents.1517375080.lirong" afterPath="$PROJECT_DIR$/exp_result/dnc/train/events.out.tfevents.1517375080.lirong" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/exp_result/dnc/view/events.out.tfevents.1517375080.lirong" afterPath="$PROJECT_DIR$/exp_result/dnc/view/events.out.tfevents.1517375080.lirong" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/exp_result/dnc/checkpoint" afterPath="$PROJECT_DIR$/exp_result/dnc/checkpoint" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/argument" afterPath="$PROJECT_DIR$/argument" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -77,7 +23,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="train_np.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="train_np.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/train_np.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-2381">
@@ -85,6 +31,16 @@
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="argument" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/argument">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="4" column="1" lean-forward="false" selection-start-line="4" selection-start-column="1" selection-end-line="4" selection-end-column="1" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -395,8 +351,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="405" y="305" width="1857" height="1092" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25538972" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25538972" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32984293" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.91518325" sideWeight="0.50193477" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -784,14 +741,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/argument">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/train_np.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2381">
@@ -799,6 +748,14 @@
           <folding>
             <element signature="e#0#38#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/argument">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="4" column="1" lean-forward="false" selection-start-line="4" selection-start-column="1" selection-end-line="4" selection-end-column="1" />
+          <folding />
         </state>
       </provider>
     </entry>
