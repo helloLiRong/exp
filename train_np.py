@@ -28,7 +28,7 @@ tf.flags.DEFINE_float("optimizer_epsilon", 1e-10,
 
 # Task parameters
 tf.flags.DEFINE_integer("batch_size", 128, "Batch size for training.")
-tf.flags.DEFINE_integer("num_bits", 8, "Dimensionality of each vector to copy")
+tf.flags.DEFINE_integer("num_bits", 4, "Dimensionality of each vector to copy")
 tf.flags.DEFINE_integer(
     "min_length", 1,
     "Lower limit on number of vectors in the observation pattern to copy")
@@ -43,13 +43,13 @@ tf.flags.DEFINE_integer("report_interval", 100,
                         "Iterations between reports (samples, valid loss).")
 tf.flags.DEFINE_string("checkpoint_dir", "exp_result/dnc",
                        "Checkpointing directory.")
-tf.flags.DEFINE_integer("checkpoint_interval", 1000,
+tf.flags.DEFINE_integer("checkpoint_interval", 100,
                         "Checkpointing step interval.")
 tf.flags.DEFINE_bool("is_training", True, "is training")
 tf.flags.DEFINE_float("curriculum_learning_epsilon", 0.9, "epsilon of curriculum learning")
 tf.flags.DEFINE_string("CLS", "Combining", "epsilon of curriculum learning")
 tf.flags.DEFINE_integer("dataset_size", 1000, "size of dataset")
-tf.flags.DEFINE_integer("current_length", 3, "current_length")
+tf.flags.DEFINE_integer("current_length", 2, "current_length")
 
 
 def run_model(input_sequence, output_size):
@@ -116,8 +116,8 @@ def train(num_training_iterations, report_interval):
 
     saver = tf.train.Saver()
     merged = tf.summary.merge_all()
-    view_train_writer = tf.summary.FileWriter(FLAGS.checkpoint_dir + '/view')
     train_writer = tf.summary.FileWriter(FLAGS.checkpoint_dir + '/train')
+    test_writer = tf.summary.FileWriter(FLAGS.checkpoint_dir + '/test')
 
     if FLAGS.checkpoint_interval > 0:
         hooks = [
@@ -147,33 +147,40 @@ def train(num_training_iterations, report_interval):
                 end_idx = start_idx + FLAGS.batch_size
                 need_create_data = False
 
-            if train_iteration % report_interval == 0:
-                test_train_data = dataset(batch_size=FLAGS.batch_size
-                                          , max_length=current_length)
+            if train_iteration % report_interval == 1:
+                test_train_data = dataset(batch_size=1280, max_length=current_length)
 
-                summary, output_np, accuracy_np = sess.run(
+                summary, train_accuracy_np = sess.run(
+                    [merged, train_accuracy], feed_dict={
+                        x: observations,
+                        y: target,
+                        m: mask
+                    })
+
+                train_writer.add_summary(summary, train_iteration)
+
+                summary, output_np, test_accuracy_np = sess.run(
                     [merged, output, train_accuracy], feed_dict={
                         x: test_train_data.observations,
                         y: test_train_data.target,
                         m: test_train_data.mask
-                    }
-                )
+                    })
 
-                view_train_writer.add_summary(summary, train_iteration)
-                if train_iteration % FLAGS.checkpoint_interval == 0:
-                    train_writer.add_summary(summary, train_iteration)
+                test_writer.add_summary(summary, train_iteration)
 
                 dataset_string = dataset.to_human_readable(test_train_data,
                                                            output_np)
                 tf.logging.info("%s, "
-                                "step %d, length: %d: Avg training loss %f. training_accuracy %f.\n%s\n",
+                                "step %d, length: %d: Avg training loss %f. training_accuracy %f. "
+                                "test_accuracy %f.\n%s\n",
                                 (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())),
                                 train_iteration,
                                 current_length,
                                 total_loss / report_interval,
-                                accuracy_np,
+                                train_accuracy_np,
+                                test_accuracy_np,
                                 dataset_string)
-                if current_length != FLAGS.max_length and accuracy_np > FLAGS.curriculum_learning_epsilon:
+                if current_length != FLAGS.max_length and train_accuracy_np > FLAGS.curriculum_learning_epsilon:
                     tf.logging.info("length: %d curriculum completed\n" % current_length)
                     current_length += 1
                     need_create_data = True
