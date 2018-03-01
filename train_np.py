@@ -12,8 +12,8 @@ import task.copy_task_np as copy_task
 FLAGS = tf.flags.FLAGS
 
 # Model parameters
-tf.flags.DEFINE_integer("hidden_size", 128, "Size of LSTM hidden layer.")
-tf.flags.DEFINE_integer("memory_size", 128, "The number of memory slots.")
+tf.flags.DEFINE_integer("hidden_size", 64, "Size of LSTM hidden layer.")
+tf.flags.DEFINE_integer("memory_size", 64, "The number of memory slots.")
 tf.flags.DEFINE_integer("word_size", 9, "The width of each memory slot.")
 tf.flags.DEFINE_integer("num_write_heads", 1, "Number of memory write heads.")
 tf.flags.DEFINE_integer("num_read_heads", 1, "Number of memory read heads.")
@@ -33,7 +33,7 @@ tf.flags.DEFINE_integer(
     "min_length", 1,
     "Lower limit on number of vectors in the observation pattern to copy")
 tf.flags.DEFINE_integer(
-    "max_length", 10,
+    "max_length", 6,
     "Upper limit on number of vectors in the observation pattern to copy")
 
 # Training options.
@@ -43,7 +43,7 @@ tf.flags.DEFINE_integer("report_interval", 100,
                         "Iterations between reports (samples, valid loss).")
 tf.flags.DEFINE_string("checkpoint_dir", "exp_result/dnc",
                        "Checkpointing directory.")
-tf.flags.DEFINE_integer("checkpoint_interval", 100,
+tf.flags.DEFINE_integer("checkpoint_interval", 1000,
                         "Checkpointing step interval.")
 tf.flags.DEFINE_bool("is_training", True, "is training")
 tf.flags.DEFINE_float("curriculum_learning_epsilon", 0.9, "epsilon of curriculum learning")
@@ -136,6 +136,7 @@ def train(num_training_iterations, report_interval):
         total_loss = 0
         current_length = FLAGS.current_length
         need_create_data = True
+        test_train_data = dataset(batch_size=FLAGS.batch_size, max_length=FLAGS.max_length)
 
         for train_iteration in range(start_iteration, num_training_iterations):
 
@@ -148,8 +149,6 @@ def train(num_training_iterations, report_interval):
                 need_create_data = False
 
             if train_iteration % report_interval == 1:
-                test_train_data = dataset(batch_size=1280, max_length=current_length)
-
                 summary, train_accuracy_np = sess.run(
                     [merged, train_accuracy], feed_dict={
                         x: observations,
