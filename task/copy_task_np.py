@@ -169,13 +169,13 @@ class CopyTask:
     def __call__(self, min_length=1, max_length=20, batch_size=128):
         """Implements build method which adds ops to graph."""
         if CLS.No.name == self._cls:
-            return self._create_data(batch_size, self._min_length, self._max_length)
+            return self.create_data(batch_size, self._min_length, self._max_length)
         elif CLS.Naive.name == self._cls:
-            return self._create_data(batch_size, min_length, max_length)
+            return self.create_data(batch_size, min_length, max_length)
         elif CLS.Combining.name == self._cls:
-            return self._create_data(batch_size, self._min_length, max_length, True)
+            return self.create_data(batch_size, self._min_length, max_length, True)
 
-    def _create_data(self, batch_size, min_length, max_length, use_combining=False):
+    def create_data(self, batch_size, min_length, max_length, use_combining=False):
         # short-hand for private fields.
         num_bits = self.num_bits
         # We reserve one dimension for the num-repeats and one for the start-marker.
